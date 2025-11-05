@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delivery Dashboard - buy.it</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* 1. Theme Variables */
+        :root {
+            --primary-blue: #00b4d8; 
+            --dark-blue: #0077b6;
+            --background-light: #f4f7f9;
+            --text-dark: #333;
+            --success-green: #2ecc71;
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            --secondary-grey: #6c757d;
+        }
+
+        /* 2. Base & Container Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-light); 
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 600px; /* Smaller width for a centralized welcome card */
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        .card {
+            border: none;
+            box-shadow: var(--card-shadow);
+            border-radius: 15px;
+            background: white;
+            padding: 40px; /* Internal padding for content */
+            text-align: center;
+        }
+
+        /* 3. 🚀 Navbar Styles */
+        nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            padding: 1.2rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            height: 60px; 
+        }
+        
+        .main-content-area {
+            /* Centers the card vertically and pushes it below the sticky nav */
+            padding-top: 80px; 
+            min-height: calc(100vh - 60px); 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        nav .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: flex-end; 
+        }
+        nav ul { list-style: none; display: flex; }
+        nav ul li { margin: 0 15px; }
+        nav ul li a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            transition: color 0.3s, background-color 0.3s;
+            padding: 8px 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        nav ul li a:hover,
+        nav ul li a.active {
+            color: var(--primary-blue);
+            background: rgba(0, 180, 216, 0.1);
+        }
+
+        /* 4. Welcome Content Styles */
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--dark-blue);
+            margin-bottom: 10px;
+        }
+        .welcome-message {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            margin-bottom: 5px;
+            display: block;
+        }
+        .info-text {
+            color: var(--secondary-grey);
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
+        .action-btn {
+            display: inline-block;
+            background: var(--success-green);
+            color: white;
+            text-decoration: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+        }
+        .action-btn:hover {
+            background-color: #27ae60;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(46, 204, 113, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="nav-content">
+        <ul>
+            <li><a class="nav-link active" href="{% url 'dashboard' %}">Dashboard</a></li>
+            <li><a class="nav-link" href="{% url 'deliver_orders' %}">View Assigned Orders</a></li>
+            <li><a class="nav-link" href="{% url 'logout' %}">Logout</a></li>
+        </ul>
+    </div>
+</nav>
+
+<div class="main-content-area">
+    <div class="container">
+        <div class="card">
+            <h1>Welcome Back! 🚀</h1>
+            
+            <span class="welcome-message">Hello, {{ user.name }}</span>
+            
+            <p class="info-text">
+                Your orders are waiting! Click the button below or use the navigation bar to view your assigned deliveries.
+            </p>
+
+            <a href="{% url 'deliver_orders' %}" class="action-btn">View Assigned Orders Now</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

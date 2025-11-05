@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>buy.it - Inventory Management System</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Poppins', sans-serif;
+        color: #333;
+        overflow-x: hidden;
+    }
+
+    header {
+        position: fixed;
+        width: 100%;
+        top: 0;
+        z-index: 1000;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.2rem 8%;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .logo {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #00b4d8;
+    }
+
+    .nav-menu {
+        display: flex;
+        list-style: none;
+        gap: 2rem;
+    }
+
+    .nav-menu a {
+        text-decoration: none;
+        color: #333;
+        font-weight: 500;
+        transition: color 0.3s;
+    }
+
+    .nav-menu a:hover {
+        color: #00b4d8;
+    }
+
+    .nav-btn {
+        background: #00b4d8;
+        color: white;
+        border: none;
+        padding: 0.8rem 2rem;
+        border-radius: 50px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .nav-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0, 180, 216, 0.3);
+    }
+
+    /* Hero Section */
+    .hero {
+        padding: 120px 20px;
+        text-align: center;
+        border-radius: 15px;
+        margin-top: 80px;
+        color: white;
+        background: 
+            linear-gradient(135deg, rgba(46, 204, 113, 0.8), rgba(39, 174, 96, 0.6)),
+            url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=1920&h=1080&fit=crop') no-repeat center/cover;
+    }
+
+    .hero h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+    }
+
+    .hero p {
+        font-size: 1.2rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .hero .btn-primary {
+        background-color: #00b4d8;
+        color: white;
+        border: none;
+        padding: 10px 25px;
+        border-radius: 50px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .hero .btn-primary:hover {
+        background-color: #0077b6;
+        box-shadow: 0 0 20px rgba(0,180,216,0.6);
+    }
+
+    /* Features Section */
+    .features {
+        padding: 6rem 8%;
+        text-align: center;
+    }
+
+    .features h2 {
+        font-size: 2.8rem;
+        color: #1e293b;
+        margin-bottom: 3rem;
+        font-weight: 700;
+    }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2.5rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .feature-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+        padding: 2rem 1.5rem;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 30px rgba(0,0,0,0.15);
+    }
+
+    .feature-card h3 {
+        font-size: 1.4rem;
+        margin-bottom: 1rem;
+        font-weight: 600;
+        color: #1e293b;
+    }
+
+    .feature-card p {
+        color: #64748b;
+        line-height: 1.6;
+    }
+
+    /* Footer */
+    footer {
+        background: #111827;
+        color: #e5e7eb;
+        text-align: center;
+        padding: 15px 0;
+        margin-top: 3rem;
+        font-size: 0.9rem;
+        letter-spacing: 0.3px;
+    }
+
+    footer a {
+        color: #3b82f6;
+        text-decoration: none;
+        margin-left: 5px;
+    }
+
+    footer a:hover {
+        color: #60a5fa;
+        text-decoration: underline;
+    }
+
+    /* Responsive */
+    @media (max-width:768px) {
+        .hero h1 { font-size:2.2rem; }
+        .hero p { font-size:1rem; }
+        .features h2 { font-size:2rem; }
+        .features-grid { grid-template-columns: 1fr; }
+        .nav-menu { display: none; }
+    }
+</style>
+</head>
+<body>
+
+<header>
+    <nav>
+        <div class="logo">buy.it</div>
+        <ul class="nav-menu">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#contact">Contact</a></li>
+            <li><a href="{% url 'user_list' %}">View Users</a></li>
+    </ul>
+    <a href="{% url 'register' %}"><button class="nav-btn">Register</button></a>
+    </nav>
+</header>
+
+<!-- Hero Section -->
+<section class="hero" id="home">
+    <h1>Welcome to buy.it</h1>
+    <p>Efficiently manage your inventory, track orders, and stay updated with real-time alerts.</p>
+    <hr style="border-color:#00b4d8; width:60%; margin:20px auto;">
+    <p>Streamline your business operations with role-based access for Admins, Managers, and Customers.</p>
+   <a href="{% url 'login' %}"><button class="btn-primary">Get Started</button></a>
+</section>
+
+<!-- Features Section -->
+<section class="features" id="features">
+    <h2>Our Key Features</h2>
+    <div class="features-grid">
+        <div class="feature-card">
+            <h3>Admin Controls</h3>
+            <p>Manage users, view inventory, and track all orders with powerful admin tools.</p>
+        </div>
+        <div class="feature-card">
+            <h3>Manager Dashboard</h3>
+            <p>Monitor stock levels, restock items, and receive low stock alerts.</p>
+        </div>
+        <div class="feature-card">
+            <h3>Customer Access</h3>
+            <p>Browse items, place orders, and view order history seamlessly.</p>
+        </div>
+    </div>
+</section>
+
+<footer>x
+    &copy; 2025 buy.it. All rights reserved.
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>buy.it - User Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+    /* Global Reset */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    /* Theme-specific styles from 'buy.it' */
+    body {
+        font-family: 'Poppins', sans-serif;
+        color: #333;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh; /* Full viewport height */
+        background-color: #f4f7f9; /* Light, soft background */
+        padding: 20px;
+    }
+
+    .container {
+        max-width: 420px;
+        width: 100%;
+        background: #fff;
+        padding: 40px;
+        border-radius: 15px; /* Softer rounded corners */
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1); /* Deeper shadow */
+    }
+
+    /* Heading Style */
+    .container h2 {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    label {
+        display: block;
+        margin-top: 15px;
+        margin-bottom: 5px;
+        font-weight: 600;
+        color: #333;
+        font-size: 0.95rem;
+    }
+
+    input {
+        width: 100%;
+        padding: 10px 15px;
+        margin-bottom: 5px;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        transition: border-color 0.3s, box-shadow 0.3s;
+        font-size: 1rem;
+    }
+
+    input:focus {
+        border-color: #00b4d8;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.2);
+    }
+
+    /* Primary Button Style (Log in) */
+    button[type="submit"] {
+        width: 100%;
+        background: #00b4d8; /* Primary Accent Color */
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 50px; /* Pill shape */
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+        margin-top: 25px;
+    }
+
+    button[type="submit"]:hover {
+        background-color: #0077b6;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 180, 216, 0.4);
+    }
+
+    /* Message/Alert Styles */
+    .msg {
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        font-weight: 500;
+        text-align: center;
+        border: 1px solid;
+    }
+    .msg.success { border-color: #27ae60; background-color: #e6f7ee; color: #27ae60; }
+    .msg.error { border-color: #e74c3c; background-color: #fcebeb; color: #e74c3c; }
+
+    /* Footer Links/Image Section */
+    .links {
+        text-align: center;
+        margin-top: 20px;
+        padding-top: 15px;
+        border-top: 1px solid #f0f0f0;
+    }
+
+    .links a {
+        color: #00b4d8;
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s;
+        margin: 0 10px;
+    }
+
+    .links a:hover {
+        color: #0077b6;
+        text-decoration: underline;
+    }
+
+    .store-image-container {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+
+    .store-image {
+        width: 100px; /* Smaller image for a logo-like feel */
+        height: 100px;
+        object-fit: cover;
+        border-radius: 50%; /* Circular image */
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+</style>
+</head>
+<body>
+    <div class="container">
+        <div class="store-image-container">
+            <img src="https://www.consultancy.in/illustrations/news/spotlight/2020-11-01-190144635-food-beverage.jpg" 
+                 alt="Fresh Groceries" 
+                 class="store-image"
+                 title="Fresh Groceries & Vegetables">
+            </div>
+
+        <h2>Log In to buy.it</h2>
+
+        <form method="post">
+            {% csrf_token %}
+            
+            <label for="id_email">Email</label>
+            <input type="email" id="id_email" name="email" required value="{{ email|default:'' }}" autofocus>
+
+            <label for="id_password">Password</label>
+            <input type="password" id="id_password" name="password" required>
+
+            <button type="submit">Log in</button>
+        </form>
+        
+        <div class="links">
+            <p><a href="{% url 'register' %}">Create Account</a> | <a href="{% url 'index' %}">Go Home</a></p>
+        </div>
+    </div>
+</body>
+</html>

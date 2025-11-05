@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Item - {{ item.name }}</title>
+    {% load static %}
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 750px;
+            margin: 4rem auto;
+            background: white;
+            padding: 2.5rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        /* --- Header and Back Button --- */
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #ecf0f1;
+            padding-bottom: 0.5rem;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            font-size: 2rem;
+            font-weight: 700;
+            margin: 0;
+        }
+        
+        .btn-secondary {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            background: #95a5a6;
+            color: white;
+            display: inline-block;
+        }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+        
+        /* --- Item Details (Simplified for Step 1) --- */
+        .item-details {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 1rem 0;
+        }
+        
+        .item-details img {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 5px;
+            flex-shrink: 0;
+        }
+        
+        .item-info h2 {
+            font-size: 1.5rem;
+            color: #2ecc71;
+            margin-bottom: 0.2rem;
+        }
+        
+        .item-info .price {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        /* --- Multi-Step Indicators --- */
+        #step-indicators {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+        
+        #step-indicators::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 5%;
+            right: 5%;
+            height: 4px;
+            background: #ecf0f1;
+            z-index: 1;
+            transform: translateY(-50%);
+        }
+        
+        .step {
+            width: 30%;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #ecf0f1;
+            color: #7f8c8d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 0.5rem;
+            font-weight: 700;
+            transition: 0.3s;
+            border: 2px solid #ecf0f1;
+        }
+        
+        .step-label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #7f8c8d;
+        }
+        
+        .step.active .step-circle {
+            background: #2ecc71;
+            color: white;
+            border-color: #2ecc71;
+        }
+        
+        .step.completed .step-circle {
+            background: #27ae60;
+            color: white;
+            border-color: #27ae60;
+        }
+        
+        /* --- Form Section Visibility --- */
+        .form-section {
+            display: none;
+            padding: 1.5rem 0;
+            border-top: 1px solid #ecf0f1;
+        }
+        
+        .form-section.active {
+            display: block;
+        }
+        
+        /* --- Form Grid Layout --- */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr; 
+            gap: 20px;
+        }
+
+        .form-full-width {
+            grid-column: 1 / -1; 
+        }
+
+        form p {
+            margin-bottom: 0;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+
+        input[type="number"],
+        input[type="text"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 0.9rem 1.2rem;
+            border: 2px solid #ecf0f1;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: 'Poppins', sans-serif;
+            transition: all 0.3s;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: #2ecc71;
+            box-shadow: 0 0 0 3px rgba(46, 204, 113, 0.1);
+        }
+
+        /* --- Navigation Buttons --- */
+        .form-nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #ecf0f1;
+        }
+        
+        .btn-action {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .btn-prev {
+            background: #bdc3c7;
+            color: #333;
+        }
+        
+        .btn-prev:hover {
+            background: #95a5a6;
+        }
+
+        .btn-next,
+        .btn-submit {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+        }
+
+        .btn-next:hover,
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(46, 204, 113, 0.4);
+        }
+
+        ul.errorlist {
+            list-style: none;
+            padding: 0;
+            color: #e74c3c;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-top: 0.25rem;
+            grid-column: 1 / -1;
+        }
+        
+        @media (max-width: 576px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-section">
+            <h1>Place New Order</h1>
+            <a href="{% url 'dashboard' %}" class="btn-secondary">← Back to Browse Items</a>
+        </div>
+
+        <div id="step-indicators">
+            <div class="step active" data-step="1">
+                <div class="step-circle">1</div>
+                <div class="step-label">Item & Quantity</div>
+            </div>
+            <div class="step" data-step="2">
+                <div class="step-circle">2</div>
+                <div class="step-label">Delivery Address</div>
+            </div>
+            <div class="step" data-step="3">
+                <div class="step-circle">3</div>
+                <div class="step-label">Review & Submit</div>
+            </div>
+        </div>
+        
+        <div class="item-details">
+            {% if item.image_path %}
+                <img src="{{ item.image_path.url }}" alt="{{ item.name }}">
+            {% else %}
+                <img src="https://via.placeholder.com/80?text=Image" alt="{{ item.name }}">
+            {% endif %}
+            <div class="item-info">
+                <h2>{{ item.name }}</h2>
+                <p class="price">Price: ${{ item.price|floatformat:2 }}</p>
+            </div>
+        </div>
+
+        <form method="post" id="multi-step-form">
+            {% csrf_token %}
+            
+            <div class="form-section active" data-step="1">
+                <h3 style="color: #2c3e50; margin-bottom: 1.5rem;">Step 1: Order Details</h3>
+                <div class="form-grid">
+                    {# Assuming 'Quantity' is the field label #}
+                    {% for field in form %}
+                        {% if field.label == 'Quantity' %}
+                            <div class="form-group form-full-width">
+                                {{ field.label_tag }}
+                                {{ field }}
+                                {{ field.errors }}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                    <div class="form-group form-full-width">
+                        <p style="color: #7f8c8d; font-size: 0.9rem;">You are ordering: <strong>{{ item.name }}</strong>. Current stock: **{{ item.quantity }}**</p>
+                    </div>
+                </div>
+                <div class="form-nav-buttons">
+                    <div></div>
+                    <button type="button" class="btn-action btn-next">Next: Address →</button>
+                </div>
+            </div>
+
+            <div class="form-section" data-step="2">
+                <h3 style="color: #2c3e50; margin-bottom: 1.5rem;">Step 2: Delivery Information</h3>
+                <div class="form-grid">
+                    {% for field in form %}
+                        {# Render all fields EXCEPT Quantity in this step #}
+                        {% if field.label != 'Quantity' %}
+                            <div class="form-group {% if field.label == 'Address' or field.label == 'Delivery Notes' %}form-full-width{% endif %}">
+                                {{ field.label_tag }}
+                                {{ field }}
+                                {{ field.errors }}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <div class="form-nav-buttons">
+                    <button type="button" class="btn-action btn-prev">← Previous</button>
+                    <button type="button" class="btn-action btn-next">Next: Review →</button>
+                </div>
+            </div>
+
+            <div class="form-section" data-step="3">
+                <h3 style="color: #2c3e50; margin-bottom: 1.5rem;">Step 3: Confirm Order</h3>
+                <p style="font-weight: 600; color: #2ecc71;">Please confirm your details before placing the order.</p>
+                <ul id="review-list" style="list-style: none; padding: 0; margin-top: 1rem;">
+                    <li style="margin-bottom: 0.5rem;"><strong style="color: #333;">Item:</strong> {{ item.name }}</li>
+                    <li style="margin-bottom: 0.5rem;"><strong style="color: #333;">Quantity:</strong> <span id="review-quantity">--</span></li>
+                    <li style="margin-bottom: 0.5rem;"><strong style="color: #333;">City:</strong> <span id="review-city">--</span></li>
+                    <li style="margin-bottom: 0.5rem;"><strong style="color: #333;">Address:</strong> <span id="review-address">--</span></li>
+                    <li style="margin-bottom: 0.5rem;"><strong style="color: #333;">Notes:</strong> <span id="review-notes">--</span></li>
+                    <li style="margin-top: 1.5rem; font-size: 1.3rem; color: #2ecc71;"><strong style="color: #2ecc71;">Total Estimate:</strong> <span id="review-total-price">--</span></li>
+                </ul>
+                
+                <div class="form-nav-buttons">
+                    <button type="button" class="btn-action btn-prev">← Previous</button>
+                    <button type="submit" class="btn-action btn-submit">Place Order</button>
+                </div>
+            </div>
+            
+        </form>
+    </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('multi-step-form');
+        let currentStep = 1;
+        const formSections = document.querySelectorAll('.form-section');
+        const steps = document.querySelectorAll('.step');
+
+        // Helper function to find a form field element by its expected ID (e.g., 'Quantity' -> 'id_quantity')
+        function getField(fieldName) {
+            // Converts 'Delivery Notes' to 'id_delivery_notes' for lookup
+            return form.querySelector(`#id_${fieldName.toLowerCase().replace(' ', '_')}`);
+        }
+
+        // Function to update the step indicator UI
+        function updateSteps() {
+            steps.forEach(step => {
+                const stepNum = parseInt(step.dataset.step);
+                step.classList.remove('active', 'completed');
+                
+                if (stepNum === currentStep) {
+                    step.classList.add('active');
+                } else if (stepNum < currentStep) {
+                    step.classList.add('completed');
+                }
+            });
+
+            formSections.forEach(section => {
+                section.classList.remove('active');
+                if (parseInt(section.dataset.step) === currentStep) {
+                    section.classList.add('active');
+                }
+            });
+        }
+        
+        // Function to populate the review step
+        function populateReview() {
+            // Get form values using the corrected field lookup
+            const quantity = getField('Quantity')?.value || 'N/A';
+            const city = getField('City')?.value || 'N/A';
+            const address = getField('Address')?.value || 'N/A';
+            const notes = getField('Delivery Notes')?.value || 'N/A'; 
+
+            // Update review list
+            document.getElementById('review-quantity').textContent = quantity;
+            document.getElementById('review-city').textContent = city;
+            document.getElementById('review-address').textContent = address;
+            document.getElementById('review-notes').textContent = notes;
+            
+            // Calculate Total Estimate
+            const price = parseFloat("{{ item.price }}");
+            const total = (price * parseFloat(quantity)).toFixed(2);
+            document.getElementById('review-total-price').textContent = `$${isNaN(total) ? '0.00' : total}`;
+        }
+        
+        // Robust client-side validation for the current step
+        function validateStep(step) {
+            let isValid = true;
+            
+            if (step === 1) {
+                const quantityField = getField('Quantity');
+                // Check if quantity is present and greater than zero
+                if (!quantityField || parseInt(quantityField.value) <= 0 || isNaN(parseInt(quantityField.value))) {
+                    if (quantityField) quantityField.style.borderColor = '#e74c3c';
+                    isValid = false;
+                } else if (quantityField) {
+                    quantityField.style.borderColor = '#ecf0f1';
+                }
+                
+            } else if (step === 2) {
+                // Manually validate required Step 2 fields (adjust field names as needed)
+                const fieldsToCheck = [
+                    getField('City'), 
+                    getField('Address')
+                    // Add other mandatory fields here: getField('Zip Code'), etc.
+                ];
+
+                fieldsToCheck.forEach(field => {
+                    if (field && !field.value.trim()) {
+                        field.style.borderColor = '#e74c3c';
+                        isValid = false;
+                    } else if (field) {
+                        field.style.borderColor = '#ecf0f1';
+                    }
+                });
+            }
+            
+            return isValid;
+        }
+
+
+        // Event listeners for navigation buttons
+        form.querySelectorAll('.btn-next').forEach(button => {
+            button.addEventListener('click', function() {
+                if (validateStep(currentStep)) {
+                    currentStep++;
+                    if (currentStep === 3) {
+                        populateReview(); // Populate review when reaching final step
+                    }
+                    updateSteps();
+                } else {
+                    alert('Please fill out all mandatory fields correctly to proceed.');
+                }
+            });
+        });
+
+        form.querySelectorAll('.btn-prev').forEach(button => {
+            button.addEventListener('click', function() {
+                currentStep--;
+                if (currentStep < 1) {
+                    currentStep = 1;
+                }
+                updateSteps();
+            });
+        });
+
+        updateSteps(); // Initialize the form state
+    });
+</script>
+</body>
+</html>

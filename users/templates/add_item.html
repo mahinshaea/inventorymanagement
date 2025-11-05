@@ -1,0 +1,303 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Item - buy.it (Two-Column Style)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Primary Theme Colors */
+        :root {
+            --primary-blue: #00b4d8;
+            --dark-blue: #0077b6;
+            --background-light: #f4f7f9;
+            --text-dark: #333;
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-light); 
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+
+        /* 🚀 Navbar Styles */
+        nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            padding: 1.2rem 0;
+            text-align: center;
+            position: sticky; /* Keeps nav visible */
+            top: 0;
+            z-index: 1000;
+        }
+        
+        nav .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+        }
+
+        nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+
+        nav ul li {
+            margin: 0 15px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            transition: color 0.3s, background-color 0.3s;
+            padding: 8px 15px;
+            border-radius: 8px;
+        }
+
+        nav ul li a:hover,
+        nav ul li a.active {
+            color: var(--primary-blue);
+            background: rgba(0, 180, 216, 0.1);
+        }
+
+        /* 📊 Dashboard Header Section */
+        .dashboard-header {
+            max-width: 900px;
+            margin: 40px auto 30px; /* Centered with vertical spacing */
+            padding: 0 20px;
+            text-align: left;
+        }
+
+        .dashboard-header h2 {
+            font-size: 2.2em; /* Slightly smaller than the 3em page title */
+            color: var(--dark-blue);
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        .dashboard-header p {
+            font-size: 1em;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .open-modal-btn {
+            background: #2ecc71; /* A nice green for "New" action */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+        .open-modal-btn:hover {
+            background-color: #27ae60;
+            transform: translateY(-2px);
+        }
+        
+        /* 🖼️ Two-Column Form Layout Style */
+        .page-content {
+            display: flex;
+            justify-content: center;
+            padding: 0 20px 40px; /* Bottom padding */
+        }
+
+        .form-container {
+            background: #fff;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: var(--card-shadow);
+            max-width: 900px; 
+            width: 100%;
+        }
+
+        .form-container h1 {
+            font-size: 1.6em; /* Smaller form heading */
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 30px;
+            text-align: left;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+        
+        /* Two-Column Grid Setup */
+        form {
+            display: grid;
+            grid-template-columns: 1fr 1fr; 
+            gap: 30px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        /* Full width for the submit button */
+        .submit-group {
+            grid-column: 1 / -1; 
+            text-align: center;
+            padding-top: 20px;
+        }
+
+        .field-wrapper {
+            margin-bottom: 10px;
+        }
+
+        label {
+            font-weight: 500;
+            color: var(--text-dark);
+            margin-bottom: 5px;
+            display: block;
+        }
+        
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        input[type="file"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        input[type="date"]:focus,
+        input[type="file"]:focus {
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(0, 180, 216, 0.2);
+            outline: none;
+        }
+
+        input[type="file"] {
+            padding: 10px;
+            background-color: #f9f9f9;
+        }
+
+        input[type="submit"] {
+            background: var(--primary-blue);
+            color: white;
+            border: none;
+            padding: 12px 50px; 
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: background-color 0.3s, transform 0.3s, box-shadow 0.3s;
+            display: inline-block;
+        }
+
+        input[type="submit"]:hover {
+            background-color: var(--dark-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 180, 216, 0.4);
+        }
+
+        /* Responsive: Collapse to single column on small screens */
+        @media (max-width: 768px) {
+            form {
+                grid-template-columns: 1fr; 
+                gap: 20px;
+            }
+            .form-container {
+                padding: 30px 20px;
+            }
+            .submit-group {
+                padding-top: 0;
+            }
+            .dashboard-header {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="nav-content">
+            <ul>
+                <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li><a href="#" class="active">Add Items</a></li>
+                <li><a href="{% url 'view_inventory' %}">Inventory</a></li>
+                <li><a href="{% url 'assignorders' %}">Assign Orders</a></li>
+                <li><a href="{% url 'logout' %}">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="dashboard-header">
+        <h2>Manager Inventory Summary</h2>
+        <p>This is the main area of your dashboard. You are currently adding a new product.</p>
+    </div>
+
+    <div class="page-content">
+        <div class="form-container">
+            <h1>Item Creation Form</h1>
+            <form method="post" enctype="multipart/form-data">
+                {% comment %} Django template tag placeholder {% endcomment %}
+                {% csrf_token %} 
+                
+                <div class="form-group">
+                    <h2>Core Details</h2>
+                    <div class="field-wrapper">
+                        <label for="name">Item Name:</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    
+                    <div class="field-wrapper">
+                        <label for="price">Price ($):</label>
+                        <input type="number" id="price" name="price" step="0.01" required>
+                    </div>
+                    
+                    <div class="field-wrapper">
+                        <label for="quantity">Quantity:</label>
+                        <input type="number" id="quantity" name="quantity" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <h2>Additional Information</h2>
+                    <div class="field-wrapper">
+                        <label for="description">Description:</label> 
+                        <input type="text" id="description" name="description" required>
+                    </div>
+
+                    <div class="field-wrapper">
+                        <label for="expirydate">Expiry Date:</label>
+                        <input type="date" id="expirydate" name="expirydate" required>
+                    </div>
+                    
+                    <div class="field-wrapper">
+                        <label for="image_path">Product Image:</label>
+                        <input type="file" id="image_path" name="image_path" accept="image/*" required>
+                    </div>
+                </div>
+
+                <div class="submit-group">
+                          <button type="submit" class="open-modal-btn">+ Add New Item</button>
+
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

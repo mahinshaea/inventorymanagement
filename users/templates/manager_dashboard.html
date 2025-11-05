@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manager Dashboard - buy.it</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Primary Theme Color */
+        :root {
+            --primary-blue: #00b4d8;
+            --dark-blue: #0077b6;
+            --background-light: #f4f7f9;
+            --text-dark: #333;
+        }
+
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            /* Light, clean background matching the original theme's aesthetic */
+            background-color: var(--background-light); 
+            color: var(--text-dark);
+            min-height: 100vh;
+            position: relative;
+            padding-bottom: 70px; /* Space for the fixed footer */
+        }
+
+        /* Navbar */
+        nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            padding: 1.2rem 0;
+            text-align: center;
+        }
+        
+        /* Centering and spacing content in the navbar */
+        nav .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+        }
+
+        nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+
+        nav ul li {
+            margin: 0 15px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            transition: color 0.3s, background-color 0.3s;
+            padding: 8px 15px;
+            border-radius: 8px;
+        }
+
+        nav ul li a:hover,
+        nav ul li a.active {
+            color: var(--primary-blue);
+            background: rgba(0, 180, 216, 0.1);
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-top: 60px;
+            padding: 0 20px;
+            color: var(--text-dark);
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 800;
+            color: var(--dark-blue);
+        }
+
+        header p {
+            font-size: 1.1em;
+            color: #666;
+        }
+
+        /* Main Content and Metrics */
+        .main-content {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .metric-card {
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            border-left: 5px solid var(--primary-blue);
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 180, 216, 0.2);
+        }
+
+        .metric-card h2 {
+            font-size: 2.5em;
+            color: var(--primary-blue); /* Accent Blue */
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+
+        .metric-card p {
+            font-size: 1em;
+            color: #666;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 15px;
+            font-size: 0.9em;
+            color: #fff;
+            background: #1e293b; /* Darker background for contrast */
+            width: 100%;
+            position: absolute;
+            bottom: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="nav-content">
+            <ul>
+                <li><a href="#" class="active">Dashboard</a></li>
+                <li><a href="{% url 'add_item' %}">Add Items</a></li>
+                <li><a href="{% url 'view_inventory' %}">Inventory</a></li>
+                <li><a href="{% url 'assignorders' %}">Assign Orders</a></li>
+                <li><a href="{% url 'logout' %}">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <header>
+        <h1>Welcome, Manager 📈</h1>
+        <p>Monitor real-time inventory and manage operations efficiently.</p>
+    </header>
+
+    <div class="main-content">
+        <div class="metrics-grid">
+            
+            <div class="metric-card">
+                <h2>152</h2>
+                <p>Total Items in Stock</p>
+            </div>
+            
+            <div class="metric-card">
+                <h2>12</h2>
+                <p>Low Stock Alerts 🚨</p>
+            </div>
+            
+            <div class="metric-card">
+                <h2>45</h2>
+                <p>Pending Orders</p>
+            </div>
+            
+            <div class="metric-card">
+                <h2>$4,200</h2>
+                <p>Weekly Sales Target</p>
+            </div>
+            
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2025 buy.it Manager Dashboard | Powered by Efficiency</p>
+    </footer>
+
+</body>
+</html>

@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product Details - buy.it</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+    /* Primary Theme Colors */
+    :root {
+        --primary-blue: #00b4d8; /* Core buy.it blue */
+        --dark-blue: #0077b6;
+        --background-light: #f4f7f9;
+        --text-dark: #333;
+        --success-green: #2ecc71;
+        --secondary-grey: #6c757d;
+        --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Base Styles */
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    body {
+        font-family: 'Poppins', sans-serif;
+        background-color: var(--background-light); 
+        color: var(--text-dark);
+        line-height: 1.6;
+        min-height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    /* Content Wrapper */
+    .details-container {
+        max-width: 1000px;
+        width: 90%;
+        margin: 40px auto;
+        padding: 0;
+    }
+
+    /* Card (Product Container) */
+    .product-card {
+        background-color: #ffffff;
+        border: none;
+        border-radius: 15px;
+        box-shadow: var(--card-shadow);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        display: flex;
+        flex-wrap: wrap; /* Allows columns to stack on mobile */
+    }
+    
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0, 180, 216, 0.2);
+    }
+
+    /* Image Column */
+    .image-column {
+        flex: 0 0 33.333333%; /* 1/3 width on desktop */
+        max-width: 33.333333%;
+        padding: 30px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background-color: #fcfcfc; /* Slight contrast for image area */
+        border-top-left-radius: 15px;
+        border-bottom-left-radius: 15px;
+    }
+
+    /* Details Column */
+    .details-column {
+        flex: 0 0 66.666667%; /* 2/3 width on desktop */
+        max-width: 66.666667%;
+        padding: 30px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Item Image */
+    .item-image {
+        max-width: 100%;
+        height: auto;
+        max-height: 250px;
+        object-fit: contain;
+        border-radius: 8px;
+    }
+
+    /* Typography */
+    .product-title {
+        font-size: 2em;
+        font-weight: 800;
+        color: var(--dark-blue);
+        margin-bottom: 10px;
+    }
+    .product-description {
+        color: #666;
+        margin-bottom: 25px;
+    }
+
+    /* Details Table */
+    .details-table {
+        width: 100%;
+        margin-top: 15px;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+    .details-table th, .details-table td {
+        padding: 10px 0;
+        text-align: left;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    .details-table th {
+        width: 30%;
+        font-weight: 600;
+        color: var(--text-dark);
+    }
+    .details-table td {
+        font-weight: 500;
+        color: #555;
+    }
+    .details-table tr:last-child th, .details-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* Buttons */
+    .button-group {
+        margin-top: auto;
+        padding-top: 30px;
+        border-top: 1px solid #f0f0f0;
+    }
+    .action-btn {
+        border: none;
+        padding: 12px 25px;
+        border-radius: 50px;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 1em;
+        transition: background-color 0.3s, transform 0.3s;
+        text-decoration: none;
+        display: inline-block;
+        margin-right: 15px;
+    }
+    .btn-secondary-custom {
+        background-color: var(--secondary-grey);
+        color: white;
+    }
+    .btn-secondary-custom:hover {
+        background-color: #5a6268;
+        transform: translateY(-2px);
+    }
+    .btn-success-custom {
+        background-color: var(--success-green);
+        color: white;
+    }
+    .btn-success-custom:hover {
+        background-color: #27ae60;
+        transform: translateY(-2px);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .product-card {
+            flex-direction: column;
+        }
+        .image-column, .details-column {
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
+        .image-column {
+            border-bottom: 1px solid #e2e8f0;
+            border-bottom-left-radius: 0;
+        }
+        .product-title {
+            text-align: center;
+            font-size: 1.7em;
+        }
+        .button-group {
+            text-align: center;
+        }
+        .action-btn {
+            margin: 10px 5px;
+            width: 95%; /* Full width buttons on small screens */
+            display: block;
+        }
+    }
+</style>
+</head>
+<body>
+
+<div class="details-container">
+    <div class="product-card">
+        <div class="image-column">
+            <img src="{{ item.image_path.url }}" class="item-image" alt="Product Image">
+        </div>
+        
+        <div class="details-column">
+            
+            <h3 class="product-title">{{item.name}}</h3>
+            <p class="product-description">{{item.description}}</p>
+            
+            <table class="details-table">
+                <tbody>
+                    <tr>
+                        <th scope="row">Price</th>
+                        <td>{{item.price}}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Quantity</th>
+                        <td>{{item.quantity}}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Expiry Date</th>
+                        <td>{{item.expirydate}}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="button-group">
+                <a href="{% url 'dashboard' %}" class="action-btn btn-secondary-custom">Back to Items</a>
+                <a href="#" class="action-btn btn-success-custom">Buy Now</a>
+            </div>
+        </div>
+    </div>
+</div>  
+
+</body>
+</html>

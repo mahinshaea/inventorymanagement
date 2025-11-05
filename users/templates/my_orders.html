@@ -1,0 +1,178 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Orders</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    color: #333;
+    min-height: 100vh;
+}
+
+/* --- SYNCHRONIZED NAVBAR STYLES --- */
+.navbar {
+    background: rgba(255, 255, 255, 0.95) !important;
+    box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+    
+    /* Set padding and center the navbar content like a custom container */
+    padding: 1.2rem 8% !important; 
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.navbar-collapse {
+    /* Prevents the menu from spanning the full width */
+    flex-grow: 0; 
+}
+
+.navbar-brand {
+    color: #2ecc71 !important;
+    font-weight: 700;
+    font-size: 1.8rem;
+}
+
+.navbar-nav .nav-link {
+    color: #333 !important;
+    font-weight: 500;
+    transition: 0.3s;
+    padding: 0.5rem 1rem !important; 
+    border-radius: 8px;
+}
+.navbar-nav .nav-link:hover, .nav-link.active {
+    color: #2ecc71 !important;
+    background: rgba(46,204,113,0.1);
+}
+/* --- END SYNCHRONIZED NAVBAR STYLES --- */
+
+
+.container {
+    max-width: 1100px;
+    margin-top: 60px;
+}
+
+.card {
+    border: none;
+    border-radius: 20px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    margin-bottom: 25px;
+    transition: 0.3s;
+}
+.card:hover {
+    transform: translateY(-5px);
+}
+.card img {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 12px;
+    border: 1px solid #e5e7eb;
+}
+.card-body {
+    display: flex;
+    flex-direction: row;
+}
+.card-body .info {
+    flex: 1;
+    margin-left: 20px;
+}
+.card-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #2c3e50;
+}
+.badge {
+    padding: 8px 14px;
+    font-size: 0.9rem;
+    border-radius: 10px;
+}
+.badge-pending {
+    background-color: #f39c12;
+}
+.badge-packed {
+    background-color: #27ae60;
+}
+.badge-delivered {
+    background-color: #2ecc71;
+}
+footer {
+    margin-top: 80px;
+    padding: 20px;
+    background: #2c3e50;
+    color: white;
+    text-align: center;
+    border-radius: 10px 10px 0 0;
+}
+</style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg">
+    <a class="navbar-brand" href="{% url 'index' %}">🍽️ FreshStock</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+            <li class="nav-item"><a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link" href="{% url 'dashboard' %}">Browse Items</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">Place Order</a></li>
+            <li class="nav-item"><a class="nav-link active" href="{% url 'view_orders' %}">My Orders</a></li>
+            <li class="nav-item"><a class="nav-link" href="#">Logout</a></li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container">
+    <h2 class="text-center fw-bold mb-4" style="color:#2ecc71;">My Orders 🛒</h2>
+
+    {% if orders %}
+        {% for order in orders %}
+        <div class="card">
+            <div class="card-body">
+                <img src="{% if order.item.image_path %}{{ order.item.image_path.url }}{% else %}https://via.placeholder.com/120?text=No+Image{% endif %}" alt="{{ order.item.name }}">
+
+                <div class="info">
+                    <h5 class="card-title">{{ order.item.name }} (x{{ order.quantity }})</h5>
+                    <p class="text-muted mb-1">{{ order.item.description|truncatechars:100 }}</p>
+                    <p class="small mb-2">
+                        <strong>Order ID:</strong> {{ order.order_id }} |
+                        <strong>Date:</strong> {{ order.order_date|date:"M d, Y H:i" }}
+                    </p>
+                    <p class="small mb-2"><strong>Total:</strong> ₹{{ order.total_price }}</p>
+
+                    {% if order.status == 'Pending' %}
+                        <span class="badge badge-pending">Pending</span>
+                    {% elif order.status == 'In Progress' %}
+                        <span class="badge badge-packed">In Progress</span>
+                    {% elif order.status == 'Delivered' %}
+                        <span class="badge badge-delivered">Delivered</span>
+                    {% else %}
+                        <span class="badge bg-secondary">{{ order.status }}</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="alert alert-info text-center py-4">
+            <h5>No Orders Found 😕</h5>
+            <p>You haven't placed any orders yet.</p>
+        </div>
+    {% endif %}
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

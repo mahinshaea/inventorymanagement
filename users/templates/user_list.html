@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registered Users - buy.it</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Global Reset and Font */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: #333;
+            background-color: #f4f7f9; /* Light background matching registration */
+            padding: 40px 8%;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header Styling */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #00b4d8; /* Accent color separator */
+        }
+
+        .header h2 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #1e293b;
+        }
+
+        /* Back Button Styling (Adopting CTA look) */
+        .back-link {
+            text-decoration: none;
+            color: white;
+            background-color: #00b4d8; /* Primary Accent Color */
+            padding: 0.8rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s;
+        }
+
+        .back-link:hover {
+            background-color: #0077b6;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 180, 216, 0.3);
+        }
+
+        /* Table Styling */
+        .table-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            overflow-x: auto; /* Ensures table is responsive on small screens */
+            padding: 20px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: separate; /* Use separate for border-radius on cells */
+            border-spacing: 0;
+            margin-top: 0;
+        }
+        
+        th, td {
+            padding: 15px 20px;
+            border: none; /* Remove default borders */
+            border-bottom: 1px solid #eee; /* Light separator line */
+            text-align: left;
+            font-size: 0.95rem;
+        }
+        
+        /* Table Header */
+        thead tr {
+            background-color: #f0f8ff; /* Very light blue background for header */
+            color: #1e293b;
+        }
+
+        th {
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Table Body */
+        tr:nth-child(even) {
+            background-color: #fafcff; /* Subtle alternating rows */
+        }
+        
+        tr:hover {
+            background-color: #e6f7ff; /* Hover effect with light accent blue */
+            box-shadow: 0 0 10px rgba(0, 180, 216, 0.1);
+        }
+        
+        /* Empty State */
+        .empty-row td {
+            text-align: center !important;
+            padding: 30px;
+            color: #64748b;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>Registered Users</h2>
+        <a href="{% url 'index' %}" class="back-link">Back to Home</a>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Created At</th>
+                    <th>Last Updated</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.name }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.get_role_display }}</td>
+                    <td>{{ user.created_at|date:"F d, Y H:i" }}</td>
+                    <td>{{ user.updated_at|date:"F d, Y H:i" }}</td>
+                    <td><a href="{% url 'dashboard_user' user.id %}">Dashboard</a></td>
+                </tr>
+                {% empty %}
+                <tr class="empty-row">
+                    <td colspan="5">No users registered yet.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

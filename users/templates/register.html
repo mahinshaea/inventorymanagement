@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Registration - buy.it</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Global Reset and Font */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #f4f7f9;
+            padding: 20px;
+        }
+
+        /* Main Container for Multi-Step Form */
+        .registration-container {
+            display: flex; /* Use flexbox to align form and image side-by-side */
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden; /* Ensures rounded corners apply to content */
+            width: 100%;
+            max-width: 900px; /* Wider container for multi-panel */
+        }
+
+        /* Form Panel */
+        .form-panel {
+            flex: 1.2; /* Take more space than the image panel */
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        h2 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        /* Step Indicator */
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            gap: 15px;
+        }
+
+        .step-indicator .step {
+            width: 12px;
+            height: 12px;
+            background-color: #e0e0e0;
+            border-radius: 50%;
+            transition: background-color 0.3s;
+        }
+
+        .step-indicator .step.active {
+            background-color: #00b4d8;
+        }
+
+        /* Multi-Window Content */
+        .form-step {
+            display: none; /* Hide all steps by default, show current with JS */
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .form-step.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Form Elements */
+        label {
+            font-weight: 500;
+            color: #333;
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        select {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        input:focus, select:focus {
+            border-color: #00b4d8;
+            outline: none;
+            box-shadow: 0 0 8px rgba(0, 180, 216, 0.2);
+        }
+
+        /* Navigation Buttons */
+        .button-group {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+            gap: 15px;
+        }
+
+        .button-group button {
+            flex: 1;
+            background: #00b4d8;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: transform 0.3s, box-shadow 0.3s, background-color 0.3s;
+        }
+
+        .button-group button.secondary {
+            background-color: #6c757d; /* Gray for back button */
+        }
+
+        .button-group button:hover {
+            background-color: #0077b6;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 180, 216, 0.3);
+        }
+        .button-group button.secondary:hover {
+            background-color: #5a6268;
+            box-shadow: 0 10px 25px rgba(108, 117, 125, 0.3);
+        }
+
+        /* Message and Error Styling */
+        .error-message, .success-message {
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+            text-align: center;
+        }
+        .error-message {
+            color: #d9534f;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+        }
+        .success-message {
+            color: #28a745;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+        }
+
+        /* Image Panel */
+        .image-panel {
+            flex: 1; /* Take remaining space */
+            background-color: #f0f8ff; /* Light blue background */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            min-height: 300px; /* Ensure panel has height even without image */
+        }
+
+        .image-panel img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 10px;
+        }
+
+        /* Info Card in Image Panel */
+        .info-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(5px);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-top: 20px;
+            width: 90%;
+            text-align: left;
+            position: absolute; /* Position over the image */
+            bottom: 20px; /* Adjust as needed */
+            left: 5%;
+            right: 5%;
+        }
+
+        .info-card h3 {
+            color: #00b4d8;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .info-card ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .info-card ul li {
+            margin-bottom: 10px;
+            color: #555;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+        }
+        .info-card ul li i {
+            color: #00b4d8;
+            margin-right: 10px;
+            font-size: 1.1rem;
+        }
+
+        /* Back to Home Link */
+        .back-home-link {
+            text-align: center;
+            margin-top: 25px;
+            width: 100%;
+            max-width: 400px; /* Align with form width */
+        }
+
+        .back-home-link a {
+            color: #00b4d8;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .back-home-link a:hover {
+            color: #0077b6;
+            text-decoration: underline;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .registration-container {
+                flex-direction: column; /* Stack panels vertically on smaller screens */
+                max-width: 500px;
+            }
+            .image-panel {
+                min-height: 200px; /* Smaller height for image panel */
+                order: -1; /* Place image panel above form on mobile */
+                border-bottom: 1px solid #eee; /* Separator */
+            }
+            .form-panel {
+                padding: 30px 20px;
+            }
+            .info-card {
+                position: static; /* Remove absolute positioning */
+                margin-top: 20px;
+                width: auto;
+                left: auto;
+                right: auto;
+            }
+            h2 {
+                font-size: 1.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="registration-container">
+        <div class="form-panel">
+            <h2>User Registration</h2>
+
+            <div class="step-indicator">
+                <div class="step active" id="step-dot-1"></div>
+                <div class="step" id="step-dot-2"></div>
+                <div class="step" id="step-dot-3"></div>
+            </div>
+
+           
+
+            {% if error %}
+                <div class="error-message">{{ error }}</div>
+            {% endif %}
+
+            <form method="POST" id="registrationForm">
+                {% csrf_token %}
+
+                <div class="form-step active" data-step="1">
+                    <label>Name:</label>
+                    <input type="text" name="name" value="{{ name|default:'' }}" required><br>
+
+                    <label>Email:</label>
+                    <input type="email" name="email" value="{{ email|default:'' }}" required><br>
+                    
+                    <div class="button-group">
+                        <button type="button" onclick="nextStep()">Next</button>
+                    </div>
+                </div>
+
+                <div class="form-step" data-step="2">
+                    <label>Password:</label>
+                    <input type="password" name="password" required><br>
+
+                    <div class="button-group">
+                        <button type="button" class="secondary" onclick="prevStep()">Back</button>
+                        <button type="button" onclick="nextStep()">Next</button>
+                    </div>
+                </div>
+
+                <div class="form-step" data-step="3">
+                    
+                    <div class="button-group">
+                        <button type="button" class="secondary" onclick="prevStep()">Back</button>
+                        <button type="submit">Register</button>
+                    </div>
+                </div>
+            </form>
+
+            <div class="back-home-link">
+                <p><a href="{% url 'index' %}">Back to Home</a></p>
+            </div>
+        </div>
+
+        <div class="image-panel">
+            <img id="stepImage" src="" alt="Registration Step Illustration">
+            <div class="info-card">
+                <h3>Join the Future of Inventory Management!</h3>
+                <ul>
+                    <li><i class="fas fa-user-shield"></i> Admin Controls: Full system oversight.</li>
+                    <li><i class="fas fa-chart-line"></i> Manager Dashboard: Track stock & orders.</li>
+                    <li><i class="fas fa-shopping-bag"></i> Customer Access: Easy ordering.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentStep = 1;
+        const totalSteps = 3;
+
+        const formSteps = document.querySelectorAll('.form-step');
+        const stepDots = document.querySelectorAll('.step-indicator .step');
+        const stepImage = document.getElementById('stepImage');
+
+        const stepImages = [
+            "https://images.unsplash.com/photo-1544717305-ad2d174e5087?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", // Image for Personal Info
+            "https://images.unsplash.com/photo-1590402494957-c87a5521b444?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", // Image for Account Details
+            "https://images.unsplash.com/photo-1560439247-4e6a8e329b16?q=80&w=2940&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" // Image for Role Selection
+        ];
+
+        function showStep(stepNum) {
+            formSteps.forEach((step, index) => {
+                if (index + 1 === stepNum) {
+                    step.classList.add('active');
+                } else {
+                    step.classList.remove('active');
+                }
+            });
+
+            stepDots.forEach((dot, index) => {
+                if (index + 1 <= stepNum) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+
+            // Update image based on step
+            if (stepImages[stepNum - 1]) {
+                stepImage.src = stepImages[stepNum - 1];
+            }
+        }
+
+        function nextStep() {
+            // Basic validation for current step before moving next
+            const currentInputs = formSteps[currentStep - 1].querySelectorAll('input[required], select[required]');
+            let allValid = true;
+            currentInputs.forEach(input => {
+                if (!input.checkValidity()) {
+                    input.reportValidity(); // Show browser's default validation message
+                    allValid = false;
+                }
+            });
+
+            if (allValid && currentStep < totalSteps) {
+                currentStep++;
+                showStep(currentStep);
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                showStep(currentStep);
+            }
+        }
+
+        // Initialize the first step and image on load
+        document.addEventListener('DOMContentLoaded', () => {
+            showStep(currentStep);
+        });
+    </script>
+</body>
+</html>

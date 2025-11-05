@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Assign Orders - buy.it</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        /* Primary Theme Color Variables (From Add Item Page) */
+        :root {
+            --primary-blue: #00b4d8; /* Accent Blue */
+            --dark-blue: #0077b6; /* Header Text/Strong Accent */
+            --background-light: #f4f7f9; /* Light Background */
+            --text-dark: #333;
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Base Styles */
+        * {
+            box-sizing: border-box;
+        }
+
+        /* Applying Theme to Body and Headings */
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-light); 
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+
+        /* 🚀 Navbar Styles */
+        nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            padding: 1.2rem 0;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        nav .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: center;
+        }
+
+        nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+        }
+
+        nav ul li {
+            margin: 0 15px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            transition: color 0.3s, background-color 0.3s;
+            padding: 8px 15px;
+            border-radius: 8px;
+        }
+
+        nav ul li a:hover,
+        nav ul li a.active {
+            color: var(--primary-blue);
+            background: rgba(0, 180, 216, 0.1);
+        }
+
+        /* 📊 Dashboard Header Section */
+        .page-header {
+            max-width: 1200px;
+            margin: 40px auto 30px; 
+            padding: 0 20px;
+            text-align: center;
+        }
+
+        .page-header h2 {
+            font-size: 2.2em; 
+            color: var(--dark-blue);
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+        
+        /* Customizing Bootstrap elements for the theme */
+        
+        /* Card Styling - MATCHES ADD ITEM CARD */
+        .card {
+            border: none; 
+            box-shadow: var(--card-shadow); 
+            border-radius: 15px; /* Removed !important, used default 15px */
+        }
+        
+        /* 📜 TABLE STYLING FOR MODERN LOOK */
+        .table {
+            --bs-table-bg: #fff; /* Ensure white background */
+            margin-bottom: 0;
+        }
+        
+        /* Make table header match form headings */
+        .table thead th {
+            background-color: var(--dark-blue) !important; 
+            color: #fff;
+            font-weight: 600;
+            border-bottom: 2px solid var(--dark-blue);
+        }
+        
+        /* Remove internal borders and use a light bottom border for separation */
+        .table th, .table td {
+            border-top: none; 
+            border-left: none;
+            border-right: none;
+            border-bottom: 1px solid #eee; /* Very light row separator */
+            padding: 15px 12px;
+        }
+
+        /* Remove the last border line */
+        .table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Table Hover Style */
+        .table-hover > tbody > tr:hover {
+            --bs-table-accent-bg: rgba(0, 180, 216, 0.05);
+        }
+        
+        /* Primary Button/Accent Color - Applying the theme blue */
+        .btn-primary {
+            background-color: var(--primary-blue);
+            border-color: var(--primary-blue);
+            transition: background-color 0.3s, transform 0.2s;
+            font-weight: 600;
+            border-radius: 8px; /* Slightly rounded to match form inputs */
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--dark-blue);
+            border-color: var(--dark-blue);
+            transform: translateY(-1px);
+        }
+        
+        .form-select {
+            border-radius: 8px; /* Match form field style from the previous page */
+        }
+        
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="nav-content">
+            <ul>
+                <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                <li><a href="{% url 'add_item' %}">Add Items</a></li>
+                <li><a href="{% url 'view_inventory' %}">Inventory</a></li>
+                <li><a href="#" class="active">Assign Orders</a></li>
+                <li><a href="{% url 'logout' %}">Logout</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="page-header">
+        <h2>Assign Orders to Delivery Boys</h2>
+        <p class="text-muted">Manage all pending customer orders and dispatch them for delivery.</p>
+    </div>
+
+    <div class="container mb-5">
+       
+        <div class="card"> 
+            <div class="card-body p-4">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="text-center">
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Customer</th>
+                                <th>Item</th>
+                                <th>Quantity</th>
+                                <th>Total Price (₹)</th>
+                                <th>Assign Delivery Boy</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for o in orders %}
+                                <tr>
+                                    <td class="text-center">{{ o.order_id }}</td>
+                                    <td>{{ o.user.name }}</td>
+                                    <td>{{ o.item.name }}</td>
+                                    <td class="text-center">{{ o.quantity }}</td>
+                                    <td class="text-center">{{ o.total_price }}</td>
+
+                                    <td>
+                                        <form method="POST" class="d-flex justify-content-between align-items-center">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="order_id" value="{{ o.order_id }}">
+                                            <select name="delivery_boy_id" class="form-select me-2" required>
+                                                <option value="">Select...</option>
+                                                {% for i in d %}
+                                                    <option value="{{ i.id }}">{{ i.name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                            <button type="submit" class="btn btn-primary btn-sm">Assign</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted py-3">
+                                        No pending orders available.
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Script to auto-close alerts after 4 seconds
+        setTimeout(() => {
+            document.querySelectorAll('.alert').forEach(alert => {
+                let fade = new bootstrap.Alert(alert);
+                fade.close();
+            });
+        }, 4000);
+    </script>
+</body>
+</html>

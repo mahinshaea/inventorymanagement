@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Deliveries - buy.it</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* 1. Theme Variables */
+        :root {
+            --primary-blue: #00b4d8; 
+            --dark-blue: #0077b6;
+            --background-light: #f4f7f9;
+            --text-dark: #333;
+            --success-green: #2ecc71;
+            --warning-yellow: #f1c40f; 
+            --secondary-grey: #6c757d;
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            --danger-red: #e74c3c; /* Added for alerts */
+        }
+
+        /* 2. Base & Container Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background-light); 
+            color: var(--text-dark);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px; 
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        .card {
+            border: none;
+            box-shadow: var(--card-shadow);
+            border-radius: 15px;
+            background: white;
+            margin-top: 0; 
+        }
+
+        /* 3. 🚀 Navbar Styles (Ensured consistency with the first page) */
+        nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+            padding: 1.2rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            height: 60px; 
+        }
+
+        .main-content-area {
+            padding-top: 80px; 
+            min-height: calc(100vh - 60px); 
+            display: flex;
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center;
+        }
+
+        nav .nav-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: flex-end; 
+        }
+
+        nav ul { list-style: none; display: flex; }
+        nav ul li { margin: 0 15px; }
+
+        nav ul li a {
+            text-decoration: none;
+            color: var(--text-dark);
+            font-weight: 500;
+            font-size: 1rem; /* Explicit size for consistency */
+            transition: color 0.3s, background-color 0.3s;
+            padding: 8px 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        nav ul li a:hover,
+        nav ul li a.active {
+            color: var(--primary-blue);
+            background: rgba(0, 180, 216, 0.1);
+        }
+
+        /* 4. Heading Style */
+        h2 {
+            font-size: 2.2em;
+            color: var(--dark-blue);
+            margin-bottom: 20px;
+            font-weight: 700;
+            text-align: center; 
+        }
+
+        /* 5. 📊 Custom Table Styling */
+        .data-table {
+            width: 100%;
+            border-collapse: separate; 
+            border-spacing: 0;
+            border-radius: 10px;
+            overflow: hidden; 
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            margin: 0;
+        }
+        .data-table thead tr {
+            background-color: var(--primary-blue);
+            color: white;
+            font-weight: 600;
+            text-align: left;
+        }
+        .data-table th, .data-table td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            border: none; /* No Bootstrap dependency */
+        }
+        .data-table tbody tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .data-table tbody tr:hover {
+            background-color: #f0f8ff; 
+        }
+        .data-table img {
+            border-radius: 5px;
+            object-fit: cover;
+        }
+
+        /* 6. Status Badges & Buttons (Pure CSS Replacements) */
+        .badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            min-width: 80px;
+            text-align: center;
+        }
+        .badge.success { 
+            background-color: var(--success-green); 
+            color: white; 
+        }
+        .badge.warning { 
+            background-color: var(--warning-yellow);
+            color: var(--text-dark); 
+        }
+        .badge.secondary { 
+            background-color: var(--secondary-grey);
+            color: white;
+        }
+
+        /* Custom Button Styles */
+        .btn {
+            display: inline-block;
+            padding: 8px 15px;
+            font-weight: 600;
+            text-align: center;
+            vertical-align: middle;
+            border: 1px solid transparent;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s, opacity 0.3s;
+            text-decoration: none;
+            font-size: 0.9em;
+        }
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.85em;
+        }
+        .btn-success {
+            background-color: var(--success-green);
+            border-color: var(--success-green);
+            color: white;
+        }
+        .btn-success:hover {
+            background-color: #27ae60;
+            border-color: #27ae60;
+            transform: translateY(-1px);
+        }
+        .btn-secondary {
+            background-color: var(--secondary-grey);
+            border-color: var(--secondary-grey);
+            color: white;
+        }
+        .btn-secondary[disabled] {
+            opacity: 0.65;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* Custom Alert Styles (Replacing Bootstrap Alerts) */
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border: 1px solid transparent;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            position: relative;
+        }
+        .alert-success { 
+            background-color: #d4edda; 
+            color: #28a745; 
+            border-color: #c3e6cb; 
+        }
+        .alert-danger { 
+            background-color: #f8d7da; 
+            color: #d9534f; 
+            border-color: #f5c6cb; 
+        }
+        .btn-close {
+            position: absolute;
+            top: 50%;
+            right: 15px;
+            transform: translateY(-50%);
+            padding: 0.5rem;
+            color: inherit;
+            background: none;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        /* 7. Responsive Table */
+        @media (max-width: 768px) {
+            .data-table thead { display: none; }
+            .data-table, .data-table tbody, .data-table tr, .data-table td {
+                display: block;
+                width: 100%;
+            }
+            .data-table tr {
+                margin-bottom: 15px;
+                border: 1px solid #ddd;
+                border-radius: 10px;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            }
+            .data-table td {
+                text-align: right;
+                padding-left: 50%;
+                position: relative;
+            }
+            .data-table td::before {
+                content: attr(data-label);
+                position: absolute;
+                left: 15px;
+                width: calc(50% - 30px);
+                white-space: nowrap;
+                text-align: left;
+                font-weight: 600;
+                color: var(--dark-blue);
+            }
+            .data-table td:nth-child(2) {
+                display: flex;
+                justify-content: flex-end;
+                align-items: center;
+            }
+            .data-table td:nth-child(2)::before {
+                align-self: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="nav-content">
+        <ul>
+            <li><a class="nav-link" href="{% url 'dashboard' %}">Dashboard</a></li>
+            <li><a class="nav-link active" href="{% url 'deliver_orders' %}">View Assigned Orders</a></li>
+            <li><a class="nav-link" href="{% url 'logout' %}">Logout</a></li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container main-content-area">
+    <h2 class="mb-4">🚚 My Deliveries</h2>
+
+    <div class="card shadow-lg rounded-4">
+        <div class="card-body p-0"> 
+            {% if deliveries %}
+            <table class="data-table text-center">
+                <thead>
+                    <tr>
+                        <th style="text-align: center;">Order ID</th>
+                        <th style="text-align: center;">Image</th>
+                        <th style="text-align: left;">Customer</th>
+                        <th style="text-align: left;">Address</th>
+                        <th style="text-align: left;">Item</th>
+                        <th style="text-align: center;">Quantity</th>
+                        <th style="text-align: center;">Total Price (₹)</th>
+                        <th style="text-align: center;">Status</th>
+                        <th style="text-align: center;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for d in deliveries %}
+                        <tr>
+                            <td data-label="Order ID" style="text-align: center;">{{ d.order_id }}</td>
+                            <td data-label="Image" style="text-align: center;">
+                                <img src="{% if d.item.image_path %}{{ d.item.image_path.url }}{% else %}https://via.placeholder.com/80?text=No+Image{% endif %}" alt="{{ d.item.name }}" width="80" height="80">
+                            </td>
+                            <td data-label="Customer" style="text-align: left;">{{ d.user.name }}</td>
+                            <td data-label="Address" style="text-align: left;">{{ d.address }}</td>
+                            <td data-label="Item" style="text-align: left;">{{ d.item.name }}</td>
+                            <td data-label="Quantity" style="text-align: center;">{{ d.quantity }}</td>
+                            <td data-label="Total Price (₹)" style="text-align: center;">{{ d.total_price }}</td>
+                            <td data-label="Status" style="text-align: center;">
+                                {% if d.status == 'In Progress' %}
+                                    <span class="badge warning">In Progress</span>
+                                {% elif d.status == 'Completed' %}
+                                    <span class="badge success">Completed</span>
+                                {% else %}
+                                    <span class="badge secondary">{{ d.status }}</span>
+                                {% endif %}
+                            </td>
+                            <td data-label="Action" style="text-align: center;">
+                                {% if d.status != 'Completed' %}
+                                <form method="POST" class="d-inline">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="order_id" value="{{ d.order_id }}">
+                                    <button type="submit" class="btn btn-success btn-sm">Mark as Delivered</button>
+                                </form>
+                                {% else %}
+                                    <button class="btn btn-secondary btn-sm" disabled>Delivered</button>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+                <p class="text-center text-muted p-4">No deliveries assigned yet.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    // Pure JavaScript for simple alert closing functionality
+    // Since we removed Bootstrap JS, the original closing logic won't work.
+    // We rely on the button's onclick attribute in the HTML now.
+</script>
+</body>
+</html>
