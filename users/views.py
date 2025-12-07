@@ -25,15 +25,18 @@ def printhello(request):
     return render(request, 'hello.html', { 'name': 'Django User' })
 
 def register(request):
-    """Handle customer registration only."""
+    """Handle user registration with role selection."""
     if request.method == 'POST':
         try:
             username = request.POST.get('name')
             password = request.POST.get('password')
             email = request.POST.get('email')
+            role = request.POST.get('role', 'customer')  # Get role from form, default to customer
 
-            # Force role to "customer" no matter what is in POST
-            role = 'customer'
+            # Validate role is one of allowed choices
+            valid_roles = [choice[0] for choice in role_choices]
+            if role not in valid_roles:
+                role = 'customer'  # Default if invalid role submitted
 
             # Check if user already exists
             if user.objects.filter(email=email).exists():
@@ -41,9 +44,11 @@ def register(request):
                 return render(request, 'register.html', {
                     'name': username,
                     'email': email,
+                    'role': role,
+                    'roles': role_choices,
                 })
 
-            # Create new customer user
+            # Create new user with selected role
             new_user = user(
                 name=username,
                 password=password,  # In production, use password hashing
@@ -60,10 +65,11 @@ def register(request):
             return render(request, 'register.html', {
                 'name': username,
                 'email': email,
+                'role': role,
+                'roles': role_choices,
             })
 
-    # No role selection shown since only customers can register
-    return render(request, 'register.html')
+    return render(request, 'register.html', {'roles': role_choices})
 
 
 
