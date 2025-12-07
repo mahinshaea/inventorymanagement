@@ -24,6 +24,7 @@ ALLOWED_HOSTS = [
     '192.168.1.8', # Ensure your API IP is allowed here
     '10.122.115.3',
     'inventorymanagement-8d0e.onrender.com',
+    'inventorymanagement-1-ltb3.onrender.com,
 ]
 
 
