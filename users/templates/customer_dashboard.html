@@ -7,15 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 {% load static %}
 <style>
-/* CSS Styles from the original file go here. 
-   For production, you should move this CSS to a static file (e.g., static/css/style.css) 
-   and link it using: <link rel="stylesheet" href="{% static 'css/style.css' %}">
-   
-   --- START OF INLINE CSS ---
-   (The full CSS block is omitted here for brevity, but you should copy the 
-   entire <style> block from the previous response and paste it here.)
-   --- END OF INLINE CSS ---
-*/
+/* --- START OF INLINE CSS (Copied from your previous submission) --- */
 * {
     margin: 0;
     padding: 0;
@@ -390,16 +382,16 @@ nav {
         padding: 1rem 5%;
     }
 }
+/* --- END OF INLINE CSS --- */
 </style>
 </head>
 <body>
+
 <header>
     <nav>
-        <a href="{% url 'index' %}" class="logo">🍽️ FreshStock</a>
+        <a href="{% url 'index' %}" class="logo">🍽️ buy.it</a>
         <ul class="nav-menu">
-            <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
-            <li><a href="#" class="active">Browse Items</a></li>
-            <li><a href="#">Place Order</a></li>
+            <li><a href="{% url 'dashboard' %}" class="active">Dashboard</a></li>
             <li><a href="{% url 'view_orders' %}">My Orders</a></li>
             <li><a href="{% url 'logout' %}">Logout</a></li>
         </ul>
@@ -426,72 +418,69 @@ nav {
                 {% endif %}
             </form>
 
-            <form class="search-group" method="GET">
-                <input type="text" class="search-input" placeholder="Ask AI for ingredients..." name="ai_recipe" value="{{ request.GET.ai_recipe|default:'' }}">
+            <form class="search-group" method="GET" action="{% url 'dashboard' %}">
+                <input type="text" class="search-input" placeholder="Ask AI for ingredients..." name="ai_recipe" value="{{ ai_recipe|default:'' }}">
                 <button class="btn btn-warning" type="submit">Ask AI ✨</button>
-                {% if request.GET.ai_recipe %}
-                    <a href="#" class="btn btn-secondary">Clear</a>
+                {% if ai_recipe %}
+                    <a href="{% url 'dashboard' %}" class="btn btn-secondary">Clear</a>
                 {% endif %}
             </form>
         </div>
     </div>
 
     {% if ingredient_list %}
-        <div class="ai-suggestions">
-            <h4>AI Suggestions for: <span class="badge badge-success">{{ request.GET.ai_recipe }}</span></h4>
-            <p style="color: #7f8c8d; margin-top: 0.5rem;"><small>Ingredients used: <strong>{{ ingredient_list|join:", " }}</strong></small></p>
-        </div>
-    {% elif search_term and request.GET.search %}
-        <div class="ai-suggestions">
-            <h4 style="color: #3498db;">Search Results for: <span class="badge badge-info">{{ search_term }}</span></h4>
+    <div class="ai-suggestions">
+        <h4>AI Suggestions for: <span class="badge badge-success">{{ ai_recipe }}</span></h4>
+        <p style="margin-top: 0.5rem;"><small>All Ingredients: {{ ingredient_list|join:", " }}</small></p>
+
+        {% if available_ingredients %}
+            <p style="color: #27ae60;"> -Available in inventory: {{ available_ingredients|join:", " }}</p>
+        {% endif %}
+        {% if missing_ingredients %}
+            <p style="color: #c0392b;"> -Missing ingredients: {{ missing_ingredients|join:", " }}</p>
+        {% endif %}
+    </div>
+    {% elif search_query %}
+        <div class="ai-suggestions" style="border: 1px solid rgba(52, 152, 219, 0.3);">
+            <h4 style="color: #2980b9;">Search Results for: <span class="badge badge-info">{{ search_query }}</span></h4>
         </div>
     {% endif %}
 
     {% if not items %}
-        <div class="empty-state">
-            <p>No items found.</p>
-        </div>
+    <div class="empty-state">
+        <p>No matching items found.</p>
+        {% if search_query or ai_recipe %}
+            <a href="{% url 'dashboard' %}" class="btn btn-primary" style="margin-top: 1rem;">View All Items</a>
+        {% endif %}
+    </div>
     {% else %}
-        <div class="items-grid">
-            {% for item in items %}
-                <div class="item-card">
-                    
-                    {% if item.image_path %}
-                        <img src="{{ item.image_path.url }}" class="item-image" alt="{{ item.name }}">
-                    {% else %}
-                        <div class="no-image">No Image</div>
-                    {% endif %}
-
-                    <div class="item-body">
-                        <h5 class="item-title">
-                            <a href="#">
-                                {{ item.name }}
-                            </a>
-                        </h5>
-                        {% if item.description %}
-                            <p class="item-description">{{ item.description }}</p>
-                        {% endif %}
-                        
-                        <div class="item-info">
-                            <span class="item-price">${{ item.price|floatformat:2 }}</span>
-                            <span class="item-quantity">Stock: <strong>{{ item.quantity }}</strong></span>
-                        </div>
-                        
-                        <div class="item-actions">
-                            <!-- Open the order page so user can fill address/quantity -->
-                            <form method="get" action="{% url 'order_item' item.id %}">
-                                <button type="submit" class="btn btn-success btn-small">Order Now</button>
-                            </form>
-
-                            <!-- View details (GET) -->
-                            <form method="get" action="{% url 'view_item_details' item.id %}">
-                                <button type="submit" class="btn btn-info btn-small">Details</button>
-                            </form>
-                        </div>
-                    </div>
+    <div class="items-grid">
+        {% for item in items %}
+        <div class="item-card">
+            {% if item.image_path %}
+                <img src="{{ item.image_path.url }}" class="item-image" alt="{{ item.name }}">
+            {% else %}
+                <div class="no-image">No Image</div>
+            {% endif %}
+            <div class="item-body">
+                <h5 class="item-title">
+                    <a href="{% url 'view_item_details' item.id %}" style="text-decoration: none;">
+                        {{ item.name }}
+                    </a>
+                </h5>
+                <p class="item-description">{{ item.description|default:"No description available"|truncatechars:100 }}</p>
+                <div class="item-info">
+                    <span class="item-price">₹{{ item.price|floatformat:2 }}</span>
+                    <span class="item-quantity">Stock: {{ item.quantity }}</span>
                 </div>
-            {% endfor %}
+                <div class="item-actions">
+                    <a href="{% url 'view_item_details' item.id %}" class="btn btn-info btn-small">Details</a>
+                    <a href="{% url 'order_item' item.id %}" class="btn btn-success btn-small">Order Now</a>
+                </div>
+            </div>
         </div>
+        {% endfor %}
+    </div>
     {% endif %}
 </div>
 

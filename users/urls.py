@@ -1,7 +1,21 @@
-from django.urls import path
+from django.urls import path, include
+from django.contrib import admin
+from rest_framework.routers import DefaultRouter
 from . import views
 
+# Initialize the DRF router and register viewsets
+router = DefaultRouter()
+router.register(r'items', views.ItemViewSet)
+router.register(r'orders', views.OrderViewSet)
+router.register(r'users', views.UserViewSet)
+
 urlpatterns = [
+    # API router endpoints
+    path('api/', include(router.urls)),
+    # API auth endpoints (login/logout) that set/clear the site's session cookie
+    path('api/login/', views.APILogin.as_view(), name='api_login'),
+    path('api/logout/', views.APILogout.as_view(), name='api_logout'),
+
     path('', views.printhello, name='index'),  # Changed to root URL and renamed to 'index'
     path('register/', views.register, name='register'),
     path('users/', views.user_list, name='user_list'),  # New URL for user list
@@ -16,5 +30,8 @@ urlpatterns = [
     path('order-item/<int:item_id>/', views.order_item, name='order_item'),
     path('orders/', views.myorders, name='view_orders'),
     path('assignorders/',views.assignorder,name='assignorders'),
-    path('delivery/', views.deliveryboy, name='deliver_orders')
+    path('delivery/', views.deliveryboy, name='deliver_orders'),
+    path('admin/', admin.site.urls),
+    path('test-gemini/', views.test_gemini, name='test_gemini'),
+
 ]

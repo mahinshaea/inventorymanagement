@@ -1,3 +1,4 @@
+import os
 from django.utils import timezone
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
@@ -5,12 +6,20 @@ from django.contrib import messages
 from django.core.paginator import Paginator
 from .models import item, order, user, role_choices
 from django.shortcuts import get_object_or_404
+from django.conf import settings
+import google.generativeai as genai
 from django.views.decorators.http import require_http_methods
 import logging
 
 logger = logging.getLogger(__name__)
+from rest_framework import viewsets, serializers
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.permissions import IsAdminUser, IsAuthenticated, AllowAny
+from .serializers import UserSerializer, ItemSerializer, OrderSerializer
 from .forms import  orderform
-
+genai.configure(api_key="AIzaSyA_tct7JllcC_qJzZASx6yQfD5C-RnJY20")
 
 def printhello(request):
     return render(request, 'hello.html', { 'name': 'Django User' })
@@ -65,26 +74,19 @@ def user_list(request):
 
 
 def dashboard(request, user_id=None):
-    """Render a role-based dashboard for a user. For now supports passing user_id
-    in the URL (e.g. /dashboard/3/) for testing. In a production app you'd use
-    authentication and sessions to identify the logged-in user.
-    """
+    """Role-based dashboard with Gemini AI ingredient extraction and inventory check."""
+    # 1️⃣ Identify logged-in user
     if user_id is None:
-        # If no user_id was provided, try to use logged-in user stored in session
         session_user_id = request.session.get('user_id')
         if session_user_id:
-
-
             u = get_object_or_404(user, pk=session_user_id)
         else:
-            # No user selected or logged in - ask for login / selection
-            return render(request, 'dashboard_select.html')
-
-    # If user_id was provided explicitly, override session
-    if user_id is not None:
+            messages.error(request, 'Please log in first')
+            return redirect('login')
+    else:
         u = get_object_or_404(user, pk=user_id)
 
-    # Choose template based on role
+    # 2️⃣ Role-based template
     role = (u.role or '').lower()
     template_map = {
         'admin': 'admin_dashboard.html',
@@ -92,19 +94,54 @@ def dashboard(request, user_id=None):
         'customer': 'customer_dashboard.html',
         'deliveryboy': 'delivery_dashboard.html',
     }
-    
-    # Handle search functionality
+
+    # 3️⃣ Normal item search
     search_query = request.GET.get('search', '')
+    items = item.objects.filter(quantity__gt=0, expirydate__gt=timezone.now())
     if search_query:
-        items = item.objects.filter(name__icontains=search_query, quantity__gt=0, expirydate__gt=timezone.now()).order_by('-created_at')
-    else:
-        items = item.objects.filter(quantity__gt=0, expirydate__gt=timezone.now()).order_by('-created_at')
+        items = items.filter(name__icontains=search_query)
+
+    # 4️⃣ AI Recipe Search
+    ai_recipe = request.GET.get('ai_recipe', '')
+    ingredient_list, available_ingredients, missing_ingredients = [], [], []
+
+    if ai_recipe:
+        try:
+            model = genai.GenerativeModel("gemini-2.5-flash")
+            prompt = f"List the main ingredients required to make {ai_recipe}. Respond only with ingredient names separated by commas."
+            response = model.generate_content(prompt)
+            raw_text = response.text.strip()
+            ingredient_list = [x.strip().lower() for x in raw_text.replace('\n', ',').split(',') if x.strip()]
+
+            # Remove generic words
+            common_words = ['water', 'salt', 'sugar', 'oil', 'ghee', 'spices', 'powder', 'mixed vegetables']
+            ingredient_list = [i for i in ingredient_list if i not in common_words]
+
+            # Compare with inventory
+            inventory_names = list(item.objects.values_list('name', flat=True))
+            inventory_names_lower = [name.lower() for name in inventory_names]
+
+            for ing in ingredient_list:
+                if any(ing in inv for inv in inventory_names_lower):
+                    available_ingredients.append(ing)
+                else:
+                    missing_ingredients.append(ing)
+
+            # Filter items to only show available ones
+            items = items.filter(name__in=[i for i in inventory_names if any(ing in i.lower() for ing in available_ingredients)])
+
+        except Exception as e:
+            messages.error(request, f"AI error: {str(e)}")
 
     tpl = template_map.get(role, 'customer_dashboard.html')
     return render(request, tpl, {
-        'user': u, 
+        'user': u,
         'items': items,
-        'search_query': search_query
+        'search_query': search_query,
+        'ai_recipe': ai_recipe,
+        'ingredient_list': ingredient_list,
+        'available_ingredients': available_ingredients,
+        'missing_ingredients': missing_ingredients,
     })
 
 
@@ -285,3 +322,137 @@ def deliveryboy(request):
     delivery_boy = get_object_or_404(user, pk=session_user_id, role='deliveryboy')
     deliveries = order.objects.filter(delivery_boy=delivery_boy, status='In Progress')
     return render(request, 'deliver_orders.html', {'deliveries': deliveries})
+
+
+# --- API ViewSets using Django REST Framework ---
+
+
+class UserViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    API endpoint that allows users to be viewed (Read-only for security).
+    Access should be restricted (e.g., to Admins).
+    """
+    queryset = user.objects.all().order_by('-created_at')
+    serializer_class = UserSerializer
+    # In a real app, you would define custom permissions to check role='admin'
+    # For now, we use DRF's built-in IsAdminUser as a placeholder for high-level access.
+    permission_classes = [IsAdminUser]
+
+
+class ItemViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint for viewing and managing inventory items.
+    """
+    queryset = item.objects.all().order_by('-created_at')
+    serializer_class = ItemSerializer
+    
+    # Restrict creation, update, and deletion to authenticated staff
+    def get_permissions(self):
+        # Allow anonymous read-only access (GET/HEAD/OPTIONS), require admin for writes
+        if self.request.method in ['GET', 'HEAD', 'OPTIONS']:
+            self.permission_classes = [AllowAny]
+        else:
+            self.permission_classes = [IsAdminUser]
+        return [permission() for permission in self.permission_classes]
+    
+    # Override queryset to only show available items (for customer-facing API)
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        # Filter logic similar to your existing dashboard view
+        return queryset.filter(quantity__gt=0, expirydate__gt=timezone.now())
+
+
+class OrderViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint for viewing and creating customer orders.
+    """
+    queryset = order.objects.all().order_by('-order_date')
+    serializer_class = OrderSerializer
+    permission_classes = [IsAuthenticated]
+
+    # Custom logic to handle order creation
+    def perform_create(self, serializer):
+        # The existing order_item view has complex logic:
+        # 1. Attaching the customer user
+        # 2. Calculating total_price
+        # 3. Deducting stock (item.quantity)
+        
+        # We must manually replicate this logic here or within the serializer's create method.
+        # This implementation requires the 'item' field to be sent in the POST data.
+        
+        ordered_item = serializer.validated_data.get('item')
+        quantity = serializer.validated_data.get('quantity')
+        
+        if ordered_item is None or quantity is None:
+            raise serializers.ValidationError({"detail": "`item` and `quantity` are required."})
+        
+        if quantity > ordered_item.quantity:
+            raise serializers.ValidationError({"quantity": "Ordered quantity exceeds available stock."})
+            
+        # Deduct stock
+        ordered_item.quantity -= quantity
+        ordered_item.save()
+        
+        # Calculate price and save the order
+        total_price = ordered_item.price * quantity
+        
+        # This requires the authenticated user from the request
+        # NOTE: This assumes you have proper DRF authentication configured!
+        serializer.save(user=self.request.user, total_price=total_price)
+
+
+class APILogin(APIView):
+    """Simple API login endpoint that sets the session['user_id'] for subsequent requests.
+
+    POST payload: {"email": "...", "password": "..."}
+    Returns JSON with user info on success and sets the session cookie.
+    """
+    permission_classes = [AllowAny]
+
+    def post(self, request, format=None):
+        email = request.data.get('email')
+        password = request.data.get('password')
+
+        if not email or not password:
+            return Response({"detail": "Email and password are required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            u = user.objects.get(email=email)
+        except user.DoesNotExist:
+            return Response({"detail": "Invalid credentials."}, status=status.HTTP_400_BAD_REQUEST)
+
+        if u.password != password:
+            return Response({"detail": "Invalid credentials."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Set session marker used by the site views
+        request.session['user_id'] = u.id
+
+        return Response({
+            "success": True,
+            "user": {"id": u.id, "name": u.name, "email": u.email, "role": u.role}
+        })
+
+
+class APILogout(APIView):
+    """Simple API logout endpoint that removes the session marker."""
+    permission_classes = [AllowAny]
+
+    def post(self, request, format=None):
+        request.session.pop('user_id', None)
+        return Response({"success": True})
+def test_gemini(request):
+    import google.generativeai as genai
+    import os
+
+
+
+    model = genai.GenerativeModel("gemini-2.5-flash")
+
+    try:
+        prompt = "List 5 ingredients needed to make sambar."
+        response = model.generate_content(prompt)
+        print("Gemini raw response:", response)
+        print("Gemini text:", getattr(response, "text", None))
+        return HttpResponse(f"<pre>{getattr(response, 'text', None)}</pre>")
+    except Exception as e:
+        return HttpResponse(f"<pre>Error: {e}</pre>")
