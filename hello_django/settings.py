@@ -17,15 +17,8 @@ SECRET_KEY = 'django-insecure-hf*4(e53f1cb)jpgl!r)(m!oi%%31xeoqf+4*)k2cx$e+(k!vm
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    '127.0.0.1',
-    'localhost',
-    '192.168.1.3',
-    '192.168.1.8', # Ensure your API IP is allowed here
-    '10.122.115.3',
-    'inventorymanagement-8d0e.onrender.com',
-    'inventorymanagement-1-ltb3.onrender.com,
-]
+ALLOWED_HOSTS = ['*']
+
 
 
 # Application definition
